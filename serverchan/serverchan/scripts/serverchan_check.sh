@@ -161,7 +161,7 @@ if [[ "${serverchan_info_temp}" == "1" ]]; then
 		router_cpu_temperature=0
 	elif [ "$ishnd" == "1" ];then
 		pu_temperature_origin=`cat /sys/class/thermal/thermal_zone0/temp`
-		router_cpu_temperature=`awk 'BEGIN{printf "%.1f\n",('$cpu_temperature_origin'/'1000')}'`
+		router_cpu_temperature=`awk 'BEGIN{printf "%.1f\n",('$pu_temperature_origin'/'1000')}'`
 		interface_2_temperature=`wl -i ${interface_2} phy_tempsense | awk '{print $1}'`
 		interface_5_temperature=`wl -i ${interface_5} phy_tempsense | awk '{print $1}'`
 		[ -n "$interface_52" ] && interface_52_temperature=`wl -i ${interface_52} phy_tempsense | awk '{print $1}'`
@@ -199,8 +199,8 @@ if [[ "${serverchan_info_wan}" == "1" ]]; then
 	router_wan0_proto=`nvram get wan0_proto`
 	router_wan0_ifname=`nvram get wan0_ifname`
 	router_wan0_gw=`nvram get wan0_gw_ifname`
-	router_wan0_ip4=`curl -4 --interface ${router_wan0_gw} -s https://api.ip.sb/ip 2>&1`
-	router_wan0_ip6=`curl -6 --interface ${router_wan0_gw} -s https://api.ip.sb/ip 2>&1`
+	router_wan0_ip4=`curl -4 --interface ${router_wan0_gw} -s ip.sb 2>&1`
+	router_wan0_ip6=`curl -6 --interface ${router_wan0_gw} -s ip.sb 2>&1`
 	router_wan0_dns1=`nvram get wan0_dns | awk '{print $1}'`
 	router_wan0_dns2=`nvram get wan0_dns | awk '{print $2}'`
 	router_wan0_ip=`nvram get wan0_ipaddr`
@@ -221,8 +221,8 @@ if [[ "${serverchan_info_wan}" == "1" ]]; then
 	router_wan1_gw=`nvram get wan1_gw_ifname`
 	if [ -n "${router_wan1_ifname}" ] && [ -n "${router_wan1_gw}" ]; then
 		router_wan1_proto=`nvram get wan1_proto`
-		router_wan1_ip4=`curl -4 --interface ${router_wan1_gw} -s https://api.ip.sb/ip 2>&1`
-		router_wan1_ip6=`curl -6 --interface ${router_wan1_gw} -s https://api.ip.sb/ip 2>&1`
+		router_wan1_ip4=`curl -4 --interface ${router_wan1_gw} -s ip.sb 2>&1`
+		router_wan1_ip6=`curl -6 --interface ${router_wan1_gw} -s ip.sb 2>&1`
 		router_wan1_dns1=`nvram get wan1_dns | awk '{print $1}'`
 		router_wan1_dns2=`nvram get wan1_dns | awk '{print $2}'`
 		router_wan1_ip=`nvram get wan1_ipaddr`
@@ -515,7 +515,7 @@ sckey_nu=`dbus list serverchan_config_sckey | sort -n -t "_" -k 4|cut -d "=" -f 
 for nu in ${sckey_nu}
 do
 	serverchan_config_sckey=`dbus get serverchan_config_sckey_${nu}`
-	url="https://sctapi.ftqq.com/${serverchan_config_sckey}.send"
+	url="https://sc.ftqq.com/${serverchan_config_sckey}.send"
 	result=`wget --no-check-certificate --post-data "text=${serverchan_send_title}&desp=${serverchan_send_content}" -qO- ${url}`
     if [ -n $(echo $result | grep "success") ];then
         [ "${serverchan_info_logger}" == "1" ] && logger "[ServerChan]: 路由器状态信息推送到 SCKEY No.${nu} 成功！"
